@@ -20,18 +20,25 @@
             <group value="mtf_migrated"/>
         </annotations>
         <before>
-            <createData entity="NewAdminUser" stepKey="user" />
+            <!--
+                @TODO: Remove "executeJS" in scope of MQE-1561
+                Hack to be able to pass current admin user password without hardcoding it.
+            -->
+            <executeJS function="return '{{DefaultAdminUser.password}}'" stepKey="adminPassword" />
+            <createData entity="NewAdminUser" stepKey="user">
+                <field key="current_password">{$adminPassword}</field>
+            </createData>
             <!-- Log in to Admin Panel -->
-            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
         </before>
         <after>
             <!-- Unlock Admin user -->
             <magentoCLI command="admin:user:unlock {{DefaultAdminUser.username}}" stepKey="unlockAdminUser"/>
-            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
             <actionGroup ref="AdminDeleteUserViaCurlActionGroup" stepKey="deleteUser">
                 <argument name="user" value="$$user$$" />
             </actionGroup>
-            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+            <actionGroup ref="logout" stepKey="logout"/>
         </after>
 
         <actionGroup ref="AdminOpenUserEditPageActionGroup" stepKey="openEditUserPageFirstAttempt">
@@ -92,7 +99,7 @@
         </actionGroup>
 
         <!-- Try to login as admin and check error -->
-        <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsLockedAdmin"/>
+        <actionGroup ref="LoginAsAdmin" stepKey="loginAsLockedAdmin"/>
         <actionGroup ref="AssertMessageOnAdminLoginActionGroup" stepKey="seeLoginErrorMessage" />
     </test>
 </tests>
