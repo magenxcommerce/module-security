@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-declare(strict_types=1);
 
 namespace Magento\Security\Model\ResourceModel;
 
@@ -24,7 +23,7 @@ class AdminSessionInfo extends \Magento\Framework\Model\ResourceModel\Db\Abstrac
     /**
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
-     * @param string|null $connectionName
+     * @param null $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -88,7 +87,7 @@ class AdminSessionInfo extends \Magento\Framework\Model\ResourceModel\Db\Abstrac
             'user_id = ?' => (int) $userId,
         ];
         if (!empty($excludedSessionIds)) {
-            $whereStatement['id NOT IN (?)'] = $excludedSessionIds;
+            $whereStatement['session_id NOT IN (?)'] = $excludedSessionIds;
         }
         if (!empty($withStatuses)) {
             $whereStatement['status IN (?)'] = $withStatuses;
